@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: stock-ws-backend
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    environment:
+      PORT: 4000
+      TICK_INTERVAL_MS: "${TICK_INTERVAL_MS:-5000}"
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:5173}"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_WS_URL: "${VITE_WS_URL:-http://localhost:4000}"
+    container_name: stock-ws-frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
